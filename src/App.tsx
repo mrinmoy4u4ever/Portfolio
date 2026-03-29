@@ -35,8 +35,10 @@ export default function App() {
         
         if (entry.isIntersecting) {
           video.play().catch(() => {});
+          entry.target.classList.add('is-active');
         } else {
           video.pause();
+          entry.target.classList.remove('is-active');
         }
       });
     }, { threshold: 0.5 }); // Play when at least 50% visible
@@ -300,28 +302,28 @@ export default function App() {
                     muted 
                     loop 
                     playsInline
-                    className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                    className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 group-[.is-active]:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100 group-[.is-active]:scale-100"
                   />
                 ) : (
                   <img 
                     src={work.image} 
                     alt={work.title}
                     referrerPolicy="no-referrer"
-                    className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
+                    className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 group-[.is-active]:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100 group-[.is-active]:scale-100"
                   />
                 )}
                 
                 {/* Gradient Overlay for Text Visibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 group-[.is-active]:opacity-100 transition-opacity duration-500 pointer-events-none" />
                 
                 {/* Content Inside Bento Box */}
                 <div className="absolute inset-x-0 bottom-0 p-6 flex flex-col justify-end z-10 pointer-events-none">
                   <div className="flex justify-between items-end">
-                    <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-2 text-white/90 group-hover:text-white">"{work.title}"</h3>
-                      <span className="font-mono text-[10px] tracking-widest uppercase text-white/50 group-hover:text-white/80 transition-colors">{work.category}</span>
+                    <div className="translate-y-4 group-hover:translate-y-0 group-[.is-active]:translate-y-0 transition-transform duration-500">
+                      <h3 className="text-2xl md:text-3xl font-medium tracking-tight mb-2 text-white/90 group-hover:text-white group-[.is-active]:text-white">"{work.title}"</h3>
+                      <span className="font-mono text-[10px] tracking-widest uppercase text-white/50 group-hover:text-white/80 group-[.is-active]:text-white/80 transition-colors">{work.category}</span>
                     </div>
-                    <div className="bg-white/10 backdrop-blur-md p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 border border-white/10 overflow-hidden">
+                    <div className="bg-white/10 backdrop-blur-md p-3 rounded-full opacity-0 group-hover:opacity-100 group-[.is-active]:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 group-[.is-active]:translate-y-0 border border-white/10 overflow-hidden">
                       <motion.div
                         whileHover={{ scale: 1.2, rotate: 15 }}
                         transition={{ type: "spring", stiffness: 400, damping: 10 }}

@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
-import { Instagram, ArrowUpRight, ArrowDown, X, Sparkles, Monitor, Video, Aperture } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "motion/react";
+import { ArrowUpRight, ArrowDown, X, Sparkles, Monitor, Video, Aperture } from "lucide-react";
 
 export default function App() {
   const [activeModalVideo, setActiveModalVideo] = useState<{url: string, title?: string} | null>(null);
@@ -19,67 +19,20 @@ export default function App() {
   const footerTitleScale = useTransform(scrollYProgress, [0.85, 1], [0.8, 1]);
   const footerTitleOpacity = useTransform(scrollYProgress, [0.8, 1], [0, 0.05]);
 
-  // ---- Bio Scroll-Lock Text Reveal ----
+  // ---- Bio Scroll Tooling ----
   const bioSectionRef = useRef<HTMLDivElement>(null);
   const bioText = "Mrinmoy is an India-based cinematographer, video editor, and colorist with a decade of experience. Specializing in brand commercials, he brings a moody, cinematic visual signature to his projects. Driven by the belief that a powerful story can change us, he handles both production and post-production, constantly refining his craft with every new narrative he builds.";
   const bioWords = bioText.split(" ");
   const [revealedCount, setRevealedCount] = useState(0);
-  const isLocked = useRef(false);
-  const isDone = useRef(false);
-  const accumulatedDelta = useRef(0);
-  const DELTA_PER_WORD = 18; // scroll delta needed per word
 
+  const { scrollYProgress: bioScroll } = useScroll({
+    target: bioSectionRef,
+    offset: ["start start", "end end"]
+  });
 
-  useEffect(() => {
-    const section = bioSectionRef.current;
-    if (!section) return;
-
-    const handleWheel = (e: WheelEvent) => {
-      if (!isLocked.current || isDone.current) return;
-      e.preventDefault();
-      accumulatedDelta.current += Math.abs(e.deltaY);
-      const wordsToReveal = Math.floor(accumulatedDelta.current / DELTA_PER_WORD);
-      if (wordsToReveal > 0) {
-        accumulatedDelta.current %= DELTA_PER_WORD;
-        setRevealedCount(prev => {
-          const next = Math.min(prev + wordsToReveal, bioWords.length);
-          if (next >= bioWords.length) {
-            isDone.current = true;
-            // Unlock scroll after a brief pause so user knows to keep scrolling
-            setTimeout(() => {
-              isLocked.current = false;
-              document.body.style.overflow = '';
-            }, 400);
-          }
-          return next;
-        });
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !isDone.current) {
-          isLocked.current = true;
-          document.body.style.overflow = 'hidden';
-          // Reveal first word immediately so user sees it entered
-          setRevealedCount(prev => Math.max(prev, 1));
-        } else if (!entry.isIntersecting && !isDone.current) {
-          isLocked.current = false;
-          document.body.style.overflow = '';
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(section);
-    window.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener('wheel', handleWheel);
-      document.body.style.overflow = '';
-    };
-  }, [bioWords.length]);
+  useMotionValueEvent(bioScroll, "change", (latest) => {
+    setRevealedCount(Math.floor(latest * bioWords.length));
+  });
 
   const selectedWork = [
     {
@@ -169,7 +122,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen selection:bg-white selection:text-black overflow-x-hidden">
+    <div className="min-h-screen selection:bg-white selection:text-black [overflow-x:clip]">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 w-full z-50 p-6 md:p-10 flex justify-between items-start mix-blend-difference">
         <div className="font-mono text-[10px] tracking-widest uppercase opacity-60">
@@ -183,15 +136,53 @@ export default function App() {
       </nav>
 
       {/* Hero Section */}
-      <section className="h-screen flex flex-col p-6 md:p-10 pt-24 md:pt-32 pb-8 gap-4 md:gap-8">
+      <section className="h-[100svh] flex flex-col p-6 md:p-10 pt-24 md:pt-32 pb-8 gap-4 md:gap-8">
         
-        {/* Cinematic Cover Video with Parallax Effect */}
+        {/* MOBILE GRID SKETCH LAYOUT */}
+        <motion.div 
+           style={{ y: heroY, opacity: heroOpacity }}
+           className="md:hidden flex-grow flex items-center justify-center w-full min-h-0"
+        >
+           <div className="grid grid-cols-[auto_1fr] grid-rows-[auto_auto_auto] gap-x-1 sm:gap-x-2 gap-y-0 sm:gap-y-1 w-full">
+             
+             {/* Row 1: GRAPHER — spans full width, left-aligned */}
+             <div className="col-span-2 text-[15vw] sm:text-[13vw] leading-[0.85] font-black tracking-tighter uppercase">
+               GRAPHER
+             </div>
+
+             {/* Row 2: CINEMATO vertical + video */}
+             <div className="col-start-1 row-start-2 text-[15vw] sm:text-[13vw] leading-[0.8] font-black tracking-tighter uppercase [writing-mode:vertical-rl] rotate-180 flex items-center justify-center whitespace-nowrap">
+               CINEMATO
+             </div>
+
+             <motion.div 
+               style={{ scale: titleScale }}
+               className="col-start-2 row-start-2 rounded-xl overflow-hidden relative bg-zinc-900 border border-white/5 w-full aspect-square"
+             >
+               <video 
+                 src="https://res.cloudinary.com/dky7vj2hx/video/upload/v1774776410/Cover_Website_mobile_2_ud4jvf.mp4" 
+                 autoPlay 
+                 muted 
+                 loop 
+                 playsInline
+                 className="absolute inset-0 w-full h-full object-cover" 
+               />
+             </motion.div>
+
+             {/* Row 3: +EDITOR — spans full width, 1.4× bigger than CINEMATO */}
+             <div className="col-span-2 row-start-3 text-[21vw] sm:text-[18.2vw] leading-[0.9] font-black tracking-tighter uppercase text-transparent" style={{ WebkitTextStroke: '1.5px white' }}>
+               +EDITOR
+             </div>
+           </div>
+        </motion.div>
+
+        {/* DESKTOP LAYOUT */}
         <motion.div 
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           style={{ y: heroY, opacity: heroOpacity }}
-          className="flex-grow w-full rounded-2xl md:rounded-3xl overflow-hidden relative bg-zinc-900 border border-white/5"
+          className="hidden md:block flex-grow w-full rounded-3xl overflow-hidden relative bg-zinc-900 border border-white/5 min-h-0"
         >
           <video 
             src="https://res.cloudinary.com/dky7vj2hx/video/upload/v1774695361/Cover_Website_a1qzxe.mp4" 
@@ -208,11 +199,11 @@ export default function App() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           style={{ scale: titleScale, opacity: heroOpacity }}
-          className="max-w-[1400px] origin-left"
+          className="hidden md:block max-w-[1400px] origin-left"
         >
-          <h1 className="text-[12vw] md:text-[10vw] leading-[0.85] font-extrabold tracking-tighter uppercase relative z-10">
-            Cinematographer <br />
-            <span className="text-transparent stroke-white stroke-1" style={{ WebkitTextStroke: '1px white' }}>+ Editor</span>
+          <h1 className="leading-[0.85] font-extrabold tracking-tighter uppercase relative z-10">
+            <span className="text-[9.5vw]">Cinematographer</span><br />
+            <span className="text-[14vw] text-transparent" style={{ WebkitTextStroke: '3px white' }}>+ Editor</span>
           </h1>
         </motion.div>
         
@@ -326,66 +317,94 @@ export default function App() {
       {/* Info / About Section */}
       <section id="about" className="relative border-t border-white/10 bg-[#0f0f0f]">
         
-        {/* Animated Background Asset */}
-        <motion.div 
-          animate={{ rotate: 360 }}
-          transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
-          className="absolute -top-[10%] md:-top-[20%] -right-[10%] text-white/[0.02] z-0 pointer-events-none"
-        >
-          <Aperture size={800} strokeWidth={0.5} />
-        </motion.div>
+        {/* Animated Background Asset — fixed behind sticky */}
+        <div className="sticky top-0 h-0 overflow-visible pointer-events-none z-0">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
+            className="absolute -top-10 -right-[10%] text-white/[0.02]"
+          >
+            <Aperture size={800} strokeWidth={0.5} />
+          </motion.div>
+        </div>
 
-        {/* Bio Section — JS Scroll Lock + Word-by-Word Reveal */}
-        <div 
-          ref={bioSectionRef} 
-          className="relative z-10 min-h-screen flex flex-col justify-center p-6 md:p-10"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-20">
-            <motion.div 
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-4 aspect-[4/5] bg-zinc-900 rounded-3xl overflow-hidden relative group"
-            >
-              <motion.img 
-                src="https://picsum.photos/seed/mrinmoy/800/1000" 
-                alt="Mrinmoy Portrait" 
-                initial={{ scale: 1.25 }}
-                whileInView={{ scale: 1 }}
-                transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                viewport={{ once: true }}
-                className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
-              />
-            </motion.div>
+        {/* Bio Section — CSS Sticky Scroll-Lock (works on touch + wheel) */}
+        <div ref={bioSectionRef} className="h-[300vh] relative w-full z-10">
+          <div className="sticky top-0 h-[100svh] flex flex-col justify-center p-6 md:p-10 overflow-hidden">
 
-            <div className="lg:col-span-8 flex flex-col justify-center">
-              <h3 className="flex flex-wrap text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[1.3] font-medium tracking-tight">
-                {bioWords.map((word, i) => (
-                  <motion.span
-                    key={i}
-                    animate={{ 
-                      opacity: i < revealedCount ? 1 : 0.08,
-                      y: i < revealedCount ? 0 : 6,
-                    }}
-                    transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                    className="mr-2 md:mr-3 mt-2 inline-block"
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </h3>
-              {/* Scroll hint — shown while text is being revealed */}
+            {/* Progress bar at top */}
+            <motion.div
+              className="absolute top-0 left-0 h-[2px] bg-white/40 origin-left z-50"
+              style={{ scaleX: bioScroll }}
+            />
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-20">
+              {/* Portrait — Desktop */}
               <motion.div 
-                animate={{ opacity: revealedCount >= bioWords.length ? 0 : 0.4 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center gap-2 mt-8 font-mono text-[10px] tracking-widest uppercase"
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="hidden lg:block lg:col-span-4 aspect-[4/5] bg-zinc-900 rounded-3xl overflow-hidden relative group"
               >
-                <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                  <ArrowDown size={12} />
-                </motion.div>
-                <span>Keep scrolling to reveal</span>
+                <motion.img 
+                  src="https://res.cloudinary.com/dky7vj2hx/image/upload/v1774779245/DSC02288_gdxlnj.jpg" 
+                  alt="Mrinmoy Portrait" 
+                  initial={{ scale: 1.25 }}
+                  whileInView={{ scale: 1 }}
+                  transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+                  viewport={{ once: true }}
+                  className="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000"
+                />
               </motion.div>
+
+              {/* Bio Text */}
+              <div className="lg:col-span-8 flex flex-col justify-center">
+                {/* Mobile: portrait thumbnail + label row */}
+                <div className="lg:hidden flex flex-col items-start gap-4 mb-6">
+                  <p className="font-mono text-[10px] tracking-widest uppercase opacity-40">About</p>
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="w-32 h-32 rounded-2xl overflow-hidden relative bg-zinc-900 shrink-0"
+                  >
+                    <img
+                      src="https://res.cloudinary.com/dky7vj2hx/image/upload/v1774779245/DSC02288_gdxlnj.jpg"
+                      alt="Mrinmoy Portrait"
+                      className="absolute inset-0 w-full h-full object-cover grayscale"
+                    />
+                  </motion.div>
+                </div>
+                <h3 className="flex flex-wrap text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[1.35] font-medium tracking-tight">
+                  {bioWords.map((word, i) => (
+                    <motion.span
+                      key={i}
+                      animate={{ 
+                        opacity: i < revealedCount ? 1 : 0.08,
+                        y: i < revealedCount ? 0 : 8,
+                      }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="mr-[0.3em] mt-[0.2em] inline-block"
+                    >
+                      {word}
+                    </motion.span>
+                  ))}
+                </h3>
+
+                {/* Scroll hint */}
+                <motion.div 
+                  animate={{ opacity: revealedCount >= bioWords.length ? 0 : 0.5 }}
+                  transition={{ duration: 0.5 }}
+                  className="flex items-center gap-2 mt-8 font-mono text-[10px] tracking-widest uppercase"
+                >
+                  <motion.div animate={{ y: [0, 6, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                    <ArrowDown size={12} />
+                  </motion.div>
+                  <span>Keep scrolling to reveal</span>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>

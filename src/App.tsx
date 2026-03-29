@@ -5,6 +5,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "motion/react";
+import { ReactLenis } from 'lenis/react';
 import { ArrowUpRight, ArrowDown, X, Sparkles, Monitor, Video, Aperture } from "lucide-react";
 
 export default function App() {
@@ -148,8 +149,9 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen selection:bg-white selection:text-black [overflow-x:clip]">
-      {/* Navigation */}
+    <ReactLenis root>
+      <div className="min-h-screen selection:bg-white selection:text-black [overflow-x:clip]">
+        {/* Navigation */}
       <nav className="fixed top-0 left-0 w-full z-50 p-6 md:p-10 flex justify-between items-start mix-blend-difference">
         <div className="font-mono text-[10px] tracking-widest uppercase opacity-60">
           Mrinmoy <br /> Portfolio ©2026
@@ -560,6 +562,7 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </ReactLenis>
   );
 }

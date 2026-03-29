@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "motion/react";
 import { ArrowUpRight, ArrowDown, X, Sparkles, Monitor, Video, Aperture } from "lucide-react";
 
@@ -23,6 +23,30 @@ export default function App() {
   const bioSectionRef = useRef<HTMLDivElement>(null);
   const bioText = "Mrinmoy is an India-based cinematographer, video editor, and colorist with a decade of experience. Specializing in brand commercials, he brings a moody, cinematic visual signature to his projects. Driven by the belief that a powerful story can change us, he handles both production and post-production, constantly refining his craft with every new narrative he builds.";
   const bioWords = bioText.split(" ");
+  // ---- Mobile Scroll Autoplay Observer ----
+  useEffect(() => {
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!isMobile) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target.querySelector('video');
+        if (!video) return;
+        
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold: 0.5 }); // Play when at least 50% visible
+
+    const cards = document.querySelectorAll('.work-card');
+    cards.forEach(card => observer.observe(card));
+
+    return () => observer.disconnect();
+  }, []);
+
   const [revealedCount, setRevealedCount] = useState(0);
 
   const { scrollYProgress: bioScroll } = useScroll({
@@ -257,7 +281,7 @@ export default function App() {
                 onClick={() => {
                   if (work.video) setActiveModalVideo({ url: work.video, title: work.title });
                 }}
-                className={`group relative overflow-hidden rounded-3xl bg-zinc-900 cursor-pointer ${spans[i] || "md:col-span-1 md:row-span-1"} aspect-[9/16] md:aspect-auto`}
+                className={`work-card group relative overflow-hidden rounded-3xl bg-zinc-900 cursor-pointer ${spans[i] || "md:col-span-1 md:row-span-1"} aspect-[9/16] md:aspect-auto`}
                 onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                   const video = e.currentTarget.querySelector('video');
                   if (video) video.play();

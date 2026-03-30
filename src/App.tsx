@@ -146,6 +146,27 @@ export default function App() {
       image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774694553/Tintbox_Satabdi_jhcgfr.jpg",
       video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774694553/Tintbox_Satabdi_jhcgfr.mp4",
     },
+    {
+      id: 13,
+      title: "Casio G-Shock | Satabdi",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866281/CasioGshok_Satabdi_ath4tm.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866281/CasioGshok_Satabdi_ath4tm.mp4",
+    },
+    {
+      id: 14,
+      title: "Zouk | Satabdi",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866332/Zouk_Satabdi_vfeq93.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866332/Zouk_Satabdi_vfeq93.mp4",
+    },
+    {
+      id: 15,
+      title: "LilliLo SP",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866511/LilliLo_SP_aflfsk.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866511/LilliLo_SP_aflfsk.mp4",
+    }
   ];
 
   return (
@@ -259,19 +280,14 @@ export default function App() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 md:auto-rows-[350px] gap-4 md:gap-6">
           {selectedWork.map((work, i) => {
+            // Infinite repeating bento-box pattern for every 6 videos
             const spans = [
-              "md:col-span-2 md:row-span-2", // 0: Large main feature
-              "md:col-span-1 md:row-span-1", // 1: Small square
-              "md:col-span-1 md:row-span-1", // 2: Small square
-              "md:col-span-1 md:row-span-2", // 3: Tall vertical
-              "md:col-span-1 md:row-span-2", // 4: Tall vertical
-              "md:col-span-1 md:row-span-2", // 5: Tall vertical
-              "md:col-span-2 md:row-span-2", // 6: Large feature
-              "md:col-span-1 md:row-span-1", // 7: Small square
-              "md:col-span-1 md:row-span-1", // 8: Small square
-              "md:col-span-1 md:row-span-2", // 9: Tall vertical
-              "md:col-span-1 md:row-span-2", // 10: Tall vertical
-              "md:col-span-1 md:row-span-2", // 11: Tall vertical
+              "md:col-span-2 md:row-span-2", // Large main feature
+              "md:col-span-1 md:row-span-1", // Small square
+              "md:col-span-1 md:row-span-1", // Small square
+              "md:col-span-1 md:row-span-2", // Tall vertical
+              "md:col-span-1 md:row-span-2", // Tall vertical
+              "md:col-span-1 md:row-span-2", // Tall vertical
             ];
             
             return (
@@ -285,7 +301,7 @@ export default function App() {
                 onClick={() => {
                   if (work.video) setActiveModalVideo({ url: work.video, title: work.title });
                 }}
-                className={`work-card group relative overflow-hidden rounded-3xl bg-zinc-900 cursor-pointer ${spans[i] || "md:col-span-1 md:row-span-1"} aspect-[9/16] md:aspect-auto`}
+                className={`work-card group relative overflow-hidden rounded-3xl bg-zinc-900 cursor-pointer ${spans[i % 6]} aspect-[9/16] md:aspect-auto`}
                 onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
                   const video = e.currentTarget.querySelector('video');
                   if (video) video.play();

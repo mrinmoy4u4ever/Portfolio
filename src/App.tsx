@@ -209,7 +209,7 @@ export default function App() {
                className="col-start-2 row-start-2 rounded-xl overflow-hidden relative bg-zinc-900 border border-white/5 w-full aspect-square"
              >
                <video 
-                 src="https://res.cloudinary.com/dky7vj2hx/video/upload/v1774776410/Cover_Website_mobile_2_ud4jvf.mp4" 
+                 src="https://res.cloudinary.com/dky7vj2hx/video/upload/v1774880730/Banner_Mobile_Mix_p4tonr.mp4" 
                  autoPlay 
                  muted 
                  loop 

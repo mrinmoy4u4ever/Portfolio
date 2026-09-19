@@ -166,6 +166,55 @@ export default function App() {
       category: "COMMERCIAL",
       image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866511/LilliLo_SP_aflfsk.jpg",
       video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1774866511/LilliLo_SP_aflfsk.mp4",
+    },
+    {
+      id: 16,
+      title: "FGear Autumn | Satabdi",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803730/Sat_Fgear_Au_D2_se82fs.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803730/Sat_Fgear_Au_D2_se82fs.mp4",
+    },
+    {
+      id: 17,
+      title: "Satabdi EM",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803795/Sat_EM_1_D6_t4twku.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803795/Sat_EM_1_D6_t4twku.mp4",
+    },
+    {
+      id: 18,
+      title: "S Eu 2Logo",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803680/S_Eu_2Logo_pgtuoc.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803680/S_Eu_2Logo_pgtuoc.mp4",
+    },
+    {
+      id: 19,
+      title: "S T AP 3",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803031/S_T_AP_3_jusxoy.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803031/S_T_AP_3_jusxoy.mp4",
+    },
+    {
+      id: 20,
+      title: "P N 1",
+      category: "FASHION",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803428/P_N_1_nwipv8.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803428/P_N_1_nwipv8.mp4",
+    },
+    {
+      id: 21,
+      title: "P N 2",
+      category: "FASHION",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803595/P_N_2_qy68f6.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789803595/P_N_2_qy68f6.mp4",
+    },
+    {
+      id: 22,
+      title: "F 1n",
+      category: "COMMERCIAL",
+      image: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789802587/F_1n_ek8ur2.jpg",
+      video: "https://res.cloudinary.com/dky7vj2hx/video/upload/v1789802587/F_1n_ek8ur2.mp4",
     }
   ];
 
@@ -275,7 +324,7 @@ export default function App() {
       {/* Selected Work Grid */}
       <section id="work" className="p-6 md:p-10 border-t border-white/10">
         <div className="flex justify-between items-baseline mb-12">
-          <h2 className="text-4xl md:text-6xl font-semibold tracking-tight">Selected Work<sup className="text-xs font-mono ml-2 opacity-40">[0{selectedWork.length}]</sup></h2>
+          <h2 className="text-4xl md:text-6xl font-semibold tracking-tight">Selected Work<sup className="text-xs font-mono ml-2 opacity-40">[{selectedWork.length < 10 ? `0${selectedWork.length}` : selectedWork.length}]</sup></h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 md:auto-rows-[350px] gap-4 md:gap-6">
